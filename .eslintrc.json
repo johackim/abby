@@ -13,6 +13,7 @@
         "indent": [2, 4, { "SwitchCase": 1 }],
         "max-len": [0],
         "object-curly-newline": [0],
+        "import/extensions": [0],
         "import/no-extraneous-dependencies": [0],
         "import/prefer-default-export": [0],
         "no-restricted-syntax": [0],

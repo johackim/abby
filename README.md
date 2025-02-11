@@ -42,7 +42,7 @@ PRODUCT_TYPE=2 # Prestations de services
 Run the script to synchronize your Stripe invoices with Abby.fr:
 
 ```bash
-node index.mjs
+node index.mjs --sync
 ```
 
 The script performs the following tasks:
