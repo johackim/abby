@@ -1,4 +1,12 @@
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import Stripe from 'stripe';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: join(__dirname, '.env') });
 
 export const sleep = async (ms) => new Promise((r) => { setTimeout(r, ms); });
 
@@ -41,7 +49,7 @@ export const getIncomeBookEntries = async () => {
     return docs;
 };
 
-export const filterEntriesByMonth = async (entries, month) => {
+export const filterEntriesByMonth = async (entries = [], month = 'current') => {
     const filteredEntries = entries.filter((entry) => {
         const entryDate = new Date(entry.paidAt);
         const currentMonth = new Date().getMonth();
