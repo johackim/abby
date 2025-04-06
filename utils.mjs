@@ -86,21 +86,24 @@ export const deleteAllIncomeBookEntries = async () => {
 export const createIncomeBookEntries = async () => {
     const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-    await stripe.invoices.list({ status: 'paid' }).autoPagingEach(async (invoice) => {
-        await sleep(500);
+    /* eslint-disable complexity */
+    await stripe.charges.list().autoPagingEach(async (charge) => {
+        const { created, status, amount, refunded, invoice: invoiceId } = charge;
 
-        if (invoice.amount_paid === 0) return;
+        if (status !== 'succeeded' || amount === 0 || !invoiceId || refunded) return;
+
+        const invoice = await stripe.invoices.retrieve(invoiceId);
 
         console.log(`Processing invoice ${invoice.number}`);
 
-        await createIncomeBookEntry(({
+        await createIncomeBookEntry({
             reference: invoice.number,
             client: invoice.customer_name || invoice.customer_email,
-            date: new Date(invoice.created * 1000).toISOString(),
+            date: new Date(created * 1000).toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' }),
             amount: invoice.amount_paid,
             url: invoice.invoice_pdf,
             type: Number(process.env.PRODUCT_TYPE || 2), // 2 = Prestations de services (BNC)
             paymentMethod: Number(process.env.PAYMENT_METHOD || 9), // 9 = Stripe
-        }));
+        });
     });
 };
